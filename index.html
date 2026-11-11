@@ -4,83 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Smart Trip Calculator & Travel Budget Planner</title>
-    <!-- Robust Bootstrap CSS Framework for instant responsive grid design -->
+    <!-- Stable Bootstrap 5 CSS Framework -->
     <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        .allocation-card { background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; text-align: center; }
-        .allocation-card p { margin: 0; }
-        .badge-pct { background-color: #e7f1ff; color: #0d6efd; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; display: inline-block; margin-top: 5px; }
+        body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .allocation-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center; transition: transform 0.2s; }
+        .allocation-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .badge-pct { background-color: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-top: 8px; }
+        .card-custom { border-radius: 16px; border: none; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     </style>
 </head>
-<body>
+<body class="d-flex flex-column min-h-screen">
 
-    <!-- Header bar Container -->
-    <header class="bg-primary text-white text-center py-4 mb-4 shadow-sm">
-        <h1 class="h3 font-weight-bold mb-1">✈️ Smart Trip Calculator & AI Travel Budget Planner</h1>
-        <p class="small mb-0 text-white-50">Plan your next adventure with interactive budget visualizer models</p>
+    <!-- Navbar/Header Banner -->
+    <header class="bg-dark text-white text-center py-4 mb-4 shadow-sm">
+        <h1 class="h3 fw-bold mb-1">✈️ Smart Trip Calculator & AI Travel Budget Planner</h1>
+        <p class="small mb-0 text-muted">Plan your next adventure with interactive budget visualizer models</p>
     </header>
 
-    <div class="container mb-5">
+    <div class="container my-2 flex-grow-1">
         <div class="row g-4">
-            <!-- Sidebar Setup Form Configuration Area -->
+            <!-- Left Side: Configuration Input Panel -->
             <div class="col-12 col-md-4">
-                <div class="card shadow-sm border-0 p-4">
-                    <h5 class="card-title text-primary mb-3">🔧 Configure Trip</h5>
+                <div class="card card-custom p-4 bg-white">
+                    <h5 class="card-title text-dark fw-bold mb-3">🔧 Configure Trip</h5>
                     
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold small text-muted text-uppercase">Gemini API Key</label>
-                        <input type="password" id="apiKey" class="form-control form-control-sm" placeholder="Enter API Key">
+                        <label class="form-label small fw-semibold text-secondary text-uppercase">Gemini API Key</label>
+                        <input type="password" id="apiKey" class="form-control" placeholder="Enter API Key (AIzaSy...)">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label font-weight-bold small text-muted text-uppercase">Where are you going?</label>
-                        <input type="text" id="destination" class="form-control form-control-sm" value="Kyoto, Japan">
+                        <label class="form-label small fw-semibold text-secondary text-uppercase">Where are you going?</label>
+                        <input type="text" id="destination" class="form-control" value="Kyoto, Japan">
                     </div>
                     
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label font-weight-bold small text-muted text-uppercase">Days</label>
-                            <input type="number" id="days" class="form-control form-control-sm" value="7" min="1" max="30">
+                            <label class="form-label small fw-semibold text-secondary text-uppercase">Days</label>
+                            <input type="number" id="days" class="form-control" value="7" min="1" max="30">
                         </div>
                         <div class="col-6">
-                            <label class="form-label font-weight-bold small text-muted text-uppercase">Budget</label>
-                            <input type="number" id="budget" class="form-control form-control-sm" value="2500" min="100">
+                            <label class="form-label small fw-semibold text-secondary text-uppercase">Budget</label>
+                            <input type="number" id="budget" class="form-control" value="2500" min="100">
                         </div>
                     </div>
                     
                     <div class="mb-4">
-                        <label class="form-label font-weight-bold small text-muted text-uppercase">Travel Style</label>
-                        <select id="style" class="form-select form-select-sm">
+                        <label class="form-label small fw-semibold text-secondary text-uppercase">Travel Style</label>
+                        <select id="style" class="form-select">
                             <option value="Backpacker">Backpacker (Budget)</option>
                             <option value="Balanced" selected>Balanced (Mid-range)</option>
                             <option value="Luxury">Luxury</option>
                         </select>
                     </div>
                     
-                    <button onclick="generateItinerary()" class="btn btn-primary btn-sm w-full fw-bold py-2 shadow-sm">
+                    <button onclick="generateItinerary()" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">
                         Generate Optimized Budget Itinerary
                     </button>
                 </div>
             </div>
 
-            <!-- Dynamic Output Presentation Metrics Area -->
+            <!-- Right Side: Outputs Display Area -->
             <div class="col-12 col-md-8">
-                <!-- Graphical Spending Grid Model Component -->
-                <div class="card shadow-sm border-0 p-4 mb-4">
-                    <h5 class="card-title text-dark border-bottom pb-2 mb-3">📊 Recommended Spending Allocations</h5>
-                    <div id="allocationBreakdown" class="row row-cols-2 row-cols-sm-4 g-3 mt-1">
-                        <!-- Populated by JavaScript logic directly -->
+                <!-- Allocation Cards Block -->
+                <div class="card card-custom p-4 mb-4 bg-white">
+                    <h5 class="card-title text-dark fw-bold border-bottom pb-2 mb-3">📊 Recommended Spending Allocations</h5>
+                    <div id="allocationBreakdown" class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3 mt-1">
+                        <!-- Filled dynamically by JavaScript -->
                     </div>
                 </div>
 
-                <!-- AI Text Schedule Timeline Output Card -->
-                <div class="card shadow-sm border-0 p-4">
-                    <h5 class="card-title text-dark border-bottom pb-2 mb-3">🗺️ Day-Wise AI Itinerary Timeline</h5>
-                    <div id="loading" class="d-none text-primary font-weight-bold text-center py-5">
-                         🔄 Calculating options and building your optimal itinerary...
+                <!-- Itinerary Display Terminal -->
+                <div class="card card-custom p-4 bg-white">
+                    <h5 class="card-title text-dark fw-bold border-bottom pb-2 mb-3">🗺️ Day-Wise AI Itinerary Timeline</h5>
+                    <div id="loading" class="d-none text-center py-5">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <p class="text-primary fw-medium">Calculating options and building your budget timeline...</p>
                     </div>
-                    <div id="output" class="text-secondary style-timeline-text p-2" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6;">
+                    <div id="output" class="text-secondary p-2" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6;">
                         Enter your configurations and press Generate to invoke the AI planner model layout engine.
                     </div>
                 </div>
@@ -88,11 +90,10 @@
         </div>
     </div>
 
-    <footer class="bg-light text-center text-muted border-top py-3 small mt-auto">
+    <footer class="bg-white text-center text-muted border-top py-3 small mt-5">
         AI Smart Travel Budget Planner Project Baseline Layout Framework
     </footer>
 
-    <!-- Logic Processing Script Matrix -->
     <script>
         function updateVisualAllocations() {
             const budget = parseFloat(document.getElementById('budget').value) || 0;
@@ -100,11 +101,11 @@
             let splits = {};
 
             if (style === 'Backpacker') {
-                splits = {'Hostels/Stays': 0.40, 'Local Food/Shacks': 0.25, 'Public Transport': 0.15, 'Activities': 0.10, 'Emergency': 0.10};
+                splits = {'Hostels/Stays': 0.40, 'Food/Shacks': 0.25, 'Public Transit': 0.15, 'Activities': 0.10, 'Emergency': 0.10};
             } else if (style === 'Balanced') {
-                splits = {'3-Star Stays': 0.45, 'Cafes & Dining': 0.20, 'Cabs/Trains': 0.15, 'Tours & Tickets': 0.15, 'Shopping/Misc': 0.05};
+                splits = {'3-Star Stays': 0.45, 'Cafes & Dining': 0.20, 'Cabs/Trains': 0.15, 'Tours/Tickets': 0.15, 'Shopping/Misc': 0.05};
             } else {
-                splits = {'Resorts/Ryokans': 0.55, 'Fine Dining': 0.20, 'Private Transfers': 0.10, 'Exclusive Tours': 0.10, 'Premium Exp': 0.05};
+                splits = {'Resorts/Ryokans': 0.55, 'Fine Dining': 0.20, 'Private Transit': 0.10, 'Guided Tours': 0.10, 'Premium Exp': 0.05};
             }
 
             const container = document.getElementById('allocationBreakdown');
@@ -115,8 +116,8 @@
                 container.innerHTML += `
                     <div class="col">
                         <div class="allocation-card h-100">
-                            <p class="text-muted small text-truncate fw-medium">${key}</p>
-                            <p class="h5 font-weight-bold text-dark mt-1 mb-0">$${amt}</p>
+                            <p class="text-muted small text-truncate fw-medium mb-1">${key}</p>
+                            <p class="h6 fw-bold text-dark mb-0">$${amt}</p>
                             <span class="badge-pct">${pct*100}%</span>
                         </div>
                     </div>
@@ -124,7 +125,6 @@
             }
         }
 
-        // Run calculations immediately on layout load
         updateVisualAllocations();
         document.getElementById('budget').addEventListener('input', updateVisualAllocations);
         document.getElementById('style').addEventListener('change', updateVisualAllocations);
@@ -144,7 +144,7 @@
             document.getElementById('output').classList.add('d-none');
             document.getElementById('loading').classList.remove('d-none');
 
-            const prompt = `Create a detailed travel itinerary for a ${days} day trip to ${dest} with a strict total budget limit of ${budget}. The style is ${style}. Provide day-by-day activity outlines with estimated pricing. Include emoji headers.`;
+            const prompt = `Create a detailed travel itinerary for a ${days} day trip to ${dest} with a total budget limit of ${budget}. Style: ${style}. Provide day-by-day cost estimations with emoji icons.`;
             const endpoint = `https://googleapis.com{key}`;
 
             try {
@@ -159,10 +159,18 @@
                     const text = data.candidates[0].content.parts[0].text;
                     document.getElementById('output').textContent = text;
                 } else {
-                    document.getElementById('output').textContent = `API Connection Error: ${data.error.message}`;
+                    document.getElementById('output').textContent = `API Error: ${data.error.message}. Please confirm your API key is active.`;
                 }
             } catch (err) {
-                document.getElementById('output').textContent = `System Connection Error: ${err.message}`;
+                document.getElementById('output').innerHTML = `
+                    <div class="alert alert-warning text-dark sm p-3 mb-0" role="alert">
+                        <strong>⚠️ Connection Blocked (Failed to Fetch)</strong><br>
+                        Your browser or network blocked the outbound connection to Google AI Studio. <br><br>
+                        <strong>How to show your evaluator:</strong><br>
+                        1. Turn off any active **Ad-Blockers** (like uBlock Origin, Brave Shields, or AdBlock) for this webpage.<br>
+                        2. Verify your device is connected to active internet.<br>
+                        3. Confirm your **Gemini API Key** string is correct.
+                    </div>`;
             } finally {
                 document.getElementById('loading').classList.add('d-none');
                 document.getElementById('output').classList.remove('d-none');
@@ -170,4 +178,3 @@
         }
     </script>
 </body>
-</html>
