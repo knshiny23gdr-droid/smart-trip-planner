@@ -49,7 +49,9 @@ if submit_button:
                 res = requests.post(url, headers=headers, json=payload)
                 
                 if res.status_code == 200:
-                    itinerary_text = res.json()['candidates'][0]['content']['parts'][0]['text']
+                    # Parsing direct API response dictionary
+                    response_json = res.json()
+                    itinerary_text = response_json['candidates'][0]['content']['parts'][0]['text']
                     
                     st.success("🎉 Your Budget-Optimized Plan is Ready!")
                     
@@ -64,7 +66,7 @@ if submit_button:
                         values = [35, 25, 15, 15, 10]
                     else:  # Luxury
                         labels = ['Resorts/Ryokans', 'Fine Dining', 'Private Transfers', 'Exclusive Tours', 'Premium Experience']
-                        values = [45, 25, 15, 10, 5]
+                        values = [50, 20, 10, 15, 5]
                     
                     amounts = [(v / 100) * total_budget for v in values]
                     
@@ -75,7 +77,7 @@ if submit_button:
                     st.header("🗺️ Day-Wise AI Itinerary Timeline")
                     st.markdown(itinerary_text)
                 else:
-                    st.error(f"API Error Connection: {res.status_code}. Make sure your key is valid.")
+                    st.error(f"API Error Connection: {res.status_code}. Details: {res.text}")
                 
             except Exception as e:
                 st.error(f"System processing update required. Details: {e}")
