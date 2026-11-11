@@ -1,2 +1,5 @@
+cat << 'EOF' > requirements.txt
 streamlit
 google-generativeai
+plotly
+EOF
