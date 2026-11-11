@@ -1,6 +1,6 @@
 import streamlit as st
-import google.generativeai as genai
 import plotly.express as px
+import requests
 
 # --- PAGE SETUP ---
 st.set_page_config(page_title="AI Smart Trip Calculator", page_icon="✈️", layout="wide")
@@ -9,9 +9,6 @@ st.write("Plan your next adventure without breaking the bank!")
 
 # --- API CONFIGURATION ---
 api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password")
-
-if api_key:
-    genai.configure(api_key=api_key)
 
 # --- USER INPUT FORM ---
 with st.form("trip_form"):
@@ -32,9 +29,7 @@ if submit_button:
     else:
         with st.spinner("AI is calculating options and building your optimal itinerary..."):
             try:
-                # Force the exact stable model name
-                model = genai.GenerativeModel("gemini-2.0-flash")
-                
+                # Engineering the prompt for the AI
                 prompt = f"""
                 You are an expert AI Travel Planner and Financial Analyst.
                 Create a strict budget allocation and day-by-day itinerary for a trip to {destination} for {days} days.
@@ -42,32 +37,45 @@ if submit_button:
                 Provide clear day-by-day travel details and estimated daily costs.
                 """
                 
-                response = model.generate_content(prompt)
-                itinerary_text = response.text
+                # Direct HTTP post call bypassing the heavy SDK entirely
+                url = f"https://googleapis.com{api_key}"
+                headers = {"Content-Type": "application/json"}
+                payload = {
+                    "contents": [{
+                        "parts": [{"text": prompt}]
+                    }]
+                }
                 
-                st.success("🎉 Your Budget-Optimized Plan is Ready!")
+                res = requests.post(url, headers=headers, json=payload)
                 
-                # --- GRAPHICAL CHART ---
-                st.header("📊 Interactive Expense Distribution Model")
-                
-                if travel_style == "Backpacker (Budget)":
-                    labels = ['Hostels/Stays', 'Local Food/Shacks', 'Public Transport', 'Activities', 'Emergency Fund']
-                    values = [40, 25, 15, 10, 10]
-                elif travel_style == "Balanced (Mid-range)":
-                    labels = ['3-Star Stays', 'Cafes & Dining', 'Cabs/Trains', 'Tours & Tickets', 'Shopping/Misc']
-                    values = [35, 25, 15, 15, 10]
-                else:  # Luxury
-                    labels = ['Resorts/Ryokans', 'Fine Dining', 'Private Transfers', 'Exclusive Tours', 'Premium Experience']
-                    values = [50, 20, 10, 10, 10]
-                
-                amounts = [(v / 100) * total_budget for v in values]
-                
-                fig = px.pie(names=labels, values=amounts, title="Budget Slices", hole=0.4)
-                st.plotly_chart(fig, use_container_width=True)
-                
-                # --- TIMELINE SUMMARY ---
-                st.header("🗺️ Day-Wise AI Itinerary Timeline")
-                st.markdown(itinerary_text)
+                if res.status_code == 200:
+                    itinerary_text = res.json()['candidates'][0]['content']['parts'][0]['text']
+                    
+                    st.success("🎉 Your Budget-Optimized Plan is Ready!")
+                    
+                    # --- GRAPHICAL CHART ---
+                    st.header("📊 Interactive Expense Distribution Model")
+                    
+                    if travel_style == "Backpacker (Budget)":
+                        labels = ['Hostels/Stays', 'Local Food/Shacks', 'Public Transport', 'Activities', 'Emergency Fund']
+                        values = [40, 25, 15, 10, 10]
+                    elif travel_style == "Balanced (Mid-range)":
+                        labels = ['3-Star Stays', 'Cafes & Dining', 'Cabs/Trains', 'Tours & Tickets', 'Shopping/Misc']
+                        values = [35, 25, 15, 15, 10]
+                    else:  # Luxury
+                        labels = ['Resorts/Ryokans', 'Fine Dining', 'Private Transfers', 'Exclusive Tours', 'Premium Experience']
+                        values = [45, 25, 10, 15, 5]
+                    
+                    amounts = [(v / 100) * total_budget for v in values]
+                    
+                    fig = px.pie(names=labels, values=amounts, title="Budget Slices", hole=0.4)
+                    st.plotly_chart(fig, use_container_width=True)
+                    
+                    # --- TIMELINE SUMMARY ---
+                    st.header("🗺️ Day-Wise AI Itinerary Timeline")
+                    st.markdown(itinerary_text)
+                else:
+                    st.error(f"API Error Connection: {res.status_code}. Make sure your key is valid.")
                 
             except Exception as e:
                 st.error(f"System processing update required. Details: {e}")

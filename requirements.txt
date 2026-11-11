@@ -1,5 +1,5 @@
 cat << 'EOF' > requirements.txt
 streamlit
-google-generativeai
 plotly
+requests
 EOF
