@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Trip Calculator & Travel Budget Planner</title>
+    <!-- Tailwind CSS for modern layout rendering -->
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
+
+    <!-- Header bar -->
+    <header class="bg-blue-600 text-white shadow-md p-4 text-center">
+        <h1 class="text-2xl font-bold">✈️ Smart Trip Calculator & AI Travel Budget Planner</h1>
+        <p class="text-sm opacity-90 mt-1">Plan your next adventure with interactive budget visualizer models</p>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Sidebar Setup Form -->
+        <section class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-fit md:col-span-1">
+            <h2 class="text-lg font-semibold mb-4 text-blue-600">🔧 Configure Trip</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Gemini API Key</label>
+                    <input type="password" id="apiKey" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Enter API Key">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Where are you going?</label>
+                    <input type="text" id="destination" class="w-full p-2 border border-gray-300 rounded text-sm" value="Kyoto, Japan">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Days</label>
+                        <input type="number" id="days" class="w-full p-2 border border-gray-300 rounded text-sm" value="7" min="1" max="30">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Budget</label>
+                        <input type="number" id="budget" class="w-full p-2 border border-gray-300 rounded text-sm" value="2500" min="100">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Travel Style</label>
+                    <select id="style" class="w-full p-2 border border-gray-300 rounded text-sm bg-white">
+                        <option value="Backpacker">Backpacker (Budget)</option>
+                        <option value="Balanced" selected>Balanced (Mid-range)</option>
+                        <option value="Luxury">Luxury</option>
+                    </select>
+                </div>
+                <button onclick="generateItinerary()" class="w-full bg-blue-600 text-white font-bold p-2.5 rounded text-sm hover:bg-blue-700 transition cursor-pointer">
+                    Generate Optimized Budget Itinerary
+                </button>
+            </div>
+        </section>
+
+        <!-- Dynamic Output Content Dashboard Area -->
+        <section class="md:col-span-2 space-y-6">
+            <!-- Graphical Visual Chart Card Component -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">📊 Recommended Spending Allocations</h2>
+                <div id="allocationBreakdown" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mt-2">
+                    <!-- Javascript populates numbers here directly dynamically -->
+                </div>
+            </div>
+
+            <!-- AI Text Schedule Timeline Output Terminal -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-lg font-semibold mb-3 text-gray-800 border-b pb-2">🗺️ Day-Wise AI Itinerary Timeline</h2>
+                <div id="loading" class="hidden text-blue-600 font-medium text-center py-8 animate-pulse">
+                     Calculating options and building your optimal itinerary...
+                </div>
+                <div id="output" class="text-sm leading-relaxed whitespace-pre-wrap text-gray-700 py-2">
+                    Enter your configurations and press Generate to invoke the AI planner model layout engine.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-100 border-t border-gray-200 p-3 text-center text-xs text-gray-500">
+        AI Smart Travel Budget Planner Project Baseline Layout Framework
+    </footer>
+
+    <!-- Logic Execution Processing -->
+    <script>
+        function updateVisualAllocations() {
+            const budget = parseFloat(document.getElementById('budget').value) || 0;
+            const style = document.getElementById('style').value;
+            let splits = {};
+
+            if (style === 'Backpacker') {
+                splits = {'Hostels/Stays': 0.40, 'Local Food/Shacks': 0.25, 'Public Transport': 0.15, 'Activities': 0.10, 'Emergency': 0.10};
+            } else if (style === 'Balanced') {
+                splits = {'3-Star Stays': 0.45, 'Cafes & Dining': 0.20, 'Cabs/Trains': 0.15, 'Tours & Tickets': 0.15, 'Shopping/Misc': 0.05};
+            } else {
+                splits = {'Resorts/Ryokans': 0.55, 'Fine Dining': 0.20, 'Private Transfers': 0.10, 'Exclusive Tours': 0.10, 'Premium Exp': 0.05};
+            }
+
+            const container = document.getElementById('allocationBreakdown');
+            container.innerHTML = '';
+            
+            for (const [key, pct] of Object.entries(splits)) {
+                const amt = (pct * budget).toFixed(2);
+                container.innerHTML += `
+                    <div class="p-3 bg-gray-50 rounded border border-gray-100">
+                        <p class="text-xs text-gray-500 font-medium truncate">${key}</p>
+                        <p class="text-base font-bold text-gray-800 mt-1">${amt}</p>
+                        <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1.5 py-0.5 rounded-full">${pct*100}%</span>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize display numbers instantly on load
+        updateVisualAllocations();
+        document.getElementById('budget').addEventListener('input', updateVisualAllocations);
+        document.getElementById('style').addEventListener('change', updateVisualAllocations);
+
+        async function generateItinerary() {
+            const key = document.getElementById('apiKey').value.trim();
+            const dest = document.getElementById('destination').value;
+            const days = document.getElementById('days').value;
+            const budget = document.getElementById('budget').value;
+            const style = document.getElementById('style').value;
+
+            if (!key) {
+                alert("Please enter a valid Gemini API Key.");
+                return;
+            }
+
+            document.getElementById('output').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+            const prompt = `Create a travel itinerary for a ${days} day trip to ${dest} with a strict total budget limit of ${budget}. The style is ${style}. Provide day-by-day activity outlines with estimated pricing.`;
+            const endpoint = `https://googleapis.com{key}`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    const text = data.candidates[0].content.parts[0].text;
+                    document.getElementById('output').textContent = text;
+                } else {
+                    document.getElementById('output').textContent = `API Connection Error: ${data.error.message}`;
+                }
+            } catch (err) {
+                document.getElementById('output').textContent = `System Connection Error: ${err.message}`;
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('output').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
