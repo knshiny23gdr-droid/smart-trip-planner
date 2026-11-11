@@ -65,7 +65,7 @@ if submit_button:
                         values = [35, 25, 15, 15, 10]
                     else:  # Luxury
                         labels = ['Resorts/Ryokans', 'Fine Dining', 'Private Transfers', 'Exclusive Tours', 'Premium Experience']
-                        values = [50, 20, 10, 15, 5]
+                        values = [50, 20, 10, 10, 10]
                     
                     amounts = [(v / 100) * total_budget for v in values]
                     
