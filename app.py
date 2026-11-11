@@ -49,7 +49,6 @@ if submit_button:
                 res = requests.post(url, headers=headers, json=payload)
                 
                 if res.status_code == 200:
-                    # Parsing direct API response dictionary
                     response_json = res.json()
                     itinerary_text = response_json['candidates'][0]['content']['parts'][0]['text']
                     
